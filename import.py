@@ -32,13 +32,13 @@ if __name__ == "__main__":
 
 
 
-K9PPwrOh1HaznOBfZnbg
+
 
 import requests
-res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "K9PPwrOh1HaznOBfZnbg", "isbns": "9780060995065"})
+res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "", "isbns": "9780060995065"})
 print(res.json())
 
 
 import requests
-res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "K9PPwrOh1HaznOBfZnbg", "isbns": "074349671X"})
+res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "", "isbns": "074349671X"})
 print(res.json())
