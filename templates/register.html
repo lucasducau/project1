@@ -8,6 +8,23 @@ Register for this website
 
 {% block body %}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      {% if message == "Passwords don't match" or message == "Username already taken" %}
+      <div class="alert alert-danger" role="alert">
+          {{message}}
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="alert alert-success" role="alert">
+          {{message}}
+      </div>
+
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <form action="{{ url_for('register') }}" method="POST">
   <div class="form-group">
     <input class="form-control" name="username" placeholder="New username">

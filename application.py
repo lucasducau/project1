@@ -31,10 +31,6 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
     return render_template("index.html")
 
-
-
-
-
 @app.route("/register", methods=['POST', 'GET'])
 def register():
     if request.method == "GET":
@@ -54,8 +50,15 @@ def register():
             return redirect(url_for('register'), "303")
 
         hash = pbkdf2_sha256.hash(password)
+
+
+        if not db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).rowcount == 0:
+            flash('Username already taken')
+            return redirect(url_for('register'),'303')
+
         db.execute("INSERT INTO users (username,password) VALUES (:username, :hash)",
                     {"username": username, "hash": hash})
+
         db.commit()
         flash('Registration successful')
         return redirect(url_for('index'))
