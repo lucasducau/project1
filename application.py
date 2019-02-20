@@ -62,3 +62,10 @@ def register():
         db.commit()
         flash('Registration successful')
         return redirect(url_for('index'))
+
+
+@app.route("/search", methods=["POST", "GET"])
+def search():
+    if request.method == "GET":
+        return render_template('search.html')
+    
