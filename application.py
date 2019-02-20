@@ -68,4 +68,13 @@ def register():
 def search():
     if request.method == "GET":
         return render_template('search.html')
-    
+
+    if request.method == "POST":
+
+        s99earchtype = request.form.get("searchtype")
+        s99earchquery = request.form.get("searchquery")
+
+
+        flash(s99earchtype)
+        flash(s99earchquery)
+        return redirect(url_for('search'), '303')
