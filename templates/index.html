@@ -12,15 +12,11 @@ Rate Books
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     {% for message in messages %}
-      {% if message == 'Registration successful' %}
-      <div class="alert alert-success" role="alert">
-          {{message}}
-      </div>
-      {% endif %}
-      {% else %}
-      <div class="alert alert-danger" role="alert">
-          {{message}}
-      </div>
+
+          <div class="alert alert-success" role="alert">
+              {{message}}
+            </div>
+
 
     {% endfor %}
   {% endif %}
@@ -33,17 +29,23 @@ Rate Books
 
 <p>In this page you will be able to search and rate books</p>
 <p>login</p>
-<form action="{{ url_for('index') }}" method="post">
-  <div class="form-group">
-    <input class="form-control" name="username" placeholder="user">
-  </div>
-  <div class="form-group">
-    <input class="form-control" name="password" type="password"placeholder="pw">
-  </div>
-  <div class="form-group">
-    <button class="btn btn-primary">login</button>
-  </div>
-</form>
+
+    <form action="{{ url_for('index') }}" method="post">
+      <div class="form-group">
+        <input class="form-control" name="username" placeholder="user">
+      </div>
+      <div class="form-group">
+        <input class="form-control" name="password" type="password"placeholder="pw">
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-primary">login</button>
+      </div>
+    </form>
+
+    <p>Or sign up</p>
+    <a class="btn btn-primary" href="{{ url_for('register') }}" role="button">sign up</a>
+
 
 
 

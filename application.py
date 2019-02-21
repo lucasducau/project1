@@ -27,9 +27,51 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
-@app.route("/")
+
+
+
+@app.route("/", methods=['POST', 'GET'])
 def index():
-    return render_template("index.html")
+    if request.method == 'GET':
+        if session.get("logged_in"):
+
+            flash('You are already logged in')
+            return redirect(url_for('search'),"303")
+        else:
+
+            return render_template("index.html")
+
+    if request.method == "POST":
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        check = db.execute("SELECT username, password FROM users WHERE username = :username", {"username": username}).fetchone()
+
+        if not check:
+            flash('Invalid Username')
+            return redirect(url_for('index'), '303')
+
+        db_username = check.username
+        db_hash = check.password
+
+        flash(db_username)
+        flash(db_hash)
+
+#        db_hash="$pbkdf2-sha256$29000$Z2yNcW4NIcR4L6XU2vu/lw$cft//adlGUT3Szd8EufUfoin/Zj3ybmcMlafM1myIlE"
+
+#        db_hash = db_hash[0].encode("utf-8")
+        if pbkdf2_sha256.verify(password, db_hash):
+            session['logged_in'] = True
+            session['user_id'] = db_username
+            flash('Logged In')
+            return redirect(url_for('search'), '303')
+
+        else:
+           flash('Invalid login')
+           return redirect(url_for('index'), '303')
+
+
 
 @app.route("/register", methods=['POST', 'GET'])
 def register():
