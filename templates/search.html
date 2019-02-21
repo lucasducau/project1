@@ -8,51 +8,59 @@ Search for books
 
 
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
+{% if messages %}
+{% for message in messages %}
 
-      <div class="alert alert-danger" role="alert">
-          {{message}}
-      </div>
-    {% endfor %}
-  {% endif %}
+<div class="alert alert-danger" role="alert">
+  {{message}}
+</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 
 
 
 
 
-<h2>Search for books</h2>
-<form action="{{ url_for('search') }}" method="POST">
-  <div class="row">
-    <div class="col-sm-2">
-      <div class="form-group">
-        <select class="form-control" name="searchtype">
-            <option name="title">Title</option>
-            <option name="author">Author</option>
-            <option name="year">Year</option>
-            <option name="isbn">isbn</option>
-        </select>
+  <h2>Search for books</h2>
+
+  <hr>
+
+  <form action="{{ url_for('search') }}" method="POST">
+    <div class="row">
+      <div class="col-sm-2 col-md-2">
+        <div class="form-group">
+          <select class="form-control" name="searchtype">
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="year">Year</option>
+            <option value="isbn">isbn</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <div class="form-group">
+          <input class="form-control" name="searchquery" placeholder="Search for Books by name, author, year or isbn...">
+        </div>
+      </div>
+      <div class="col-sm-2 col-md-2">
+        <div class="form-group">
+          <button class="btn btn-primary">
+            Search
+          </button>
+
+        </div>
       </div>
     </div>
-    <div class="col-sm-8">
-      <div class="form-group">
-        <input class="form-control" name="searchquery" placeholder="Search for Books by name, author, year or isbn...">
-      </div>
-    </div>
-    <div class="col-sm-2">
-      <div class="form-group">
-        <button class="btn btn-primary">
-          Search
-          <i style="font-size:1 rem;"class="material-icons">
-            search
-          </i>
-        </button>
-
-      </div>
-    </div>
-  </div>
-</form>
+  </form>
 
 
-{% endblock %}
+
+  {% for result in results %}
+  <ul><li>{{result.title}}</li></ul>
+  {% endfor %}
+
+
+
+
+  {% endblock %}

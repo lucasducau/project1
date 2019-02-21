@@ -71,10 +71,9 @@ def search():
 
     if request.method == "POST":
 
-        s99earchtype = request.form.get("searchtype")
-        s99earchquery = request.form.get("searchquery")
+        type = request.form.get("searchtype")
+        query = request.form.get("searchquery")
 
+        results = db.execute("SELECT * FROM books WHERE title = :query", {"query": query}).fetchall()
 
-        flash(s99earchtype)
-        flash(s99earchquery)
-        return redirect(url_for('search'), '303')
+        return render_template('search.html', results=results)
