@@ -8,20 +8,21 @@ Register for this website
 
 {% block body %}
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      {% if message == "Passwords don't match" or message == "Username already taken" %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        {% if message == "Passwords don't match" or message == "Username already taken" %}
       <div class="alert alert-danger" role="alert">
           {{message}}
       </div>
-      {% endif %}
+        {% endif %}
 
 
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+        {% endfor %}
+        {% endif %}
+  {% endwith %}
 
+<p>Sign up</p>
 <form action="{{ url_for('register') }}" method="POST">
   <div class="form-group">
     <input class="form-control" name="username" placeholder="New username">
@@ -32,9 +33,14 @@ Register for this website
   <div class="form-group">
     <input class="form-control" name="password2" type="password" placeholder="Retype your password"
   </div>
-   <div class="form-group">
+
+   <div style="padding-top:1em"class="form-group">
       <button class="btn btn-primary">sign up</button>
   </div>
   </form>
+
+
+
+
 
 {% endblock %}

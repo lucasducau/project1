@@ -12,12 +12,9 @@ Rate Books
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     {% for message in messages %}
-
           <div class="alert alert-success" role="alert">
               {{message}}
             </div>
-
-
     {% endfor %}
   {% endif %}
 {% endwith %}
@@ -30,7 +27,7 @@ Rate Books
 <p>In this page you will be able to search and rate books</p>
 <p>login</p>
 
-    <form action="{{ url_for('index') }}" method="post">
+    <form action="{{ url_for('index') }}" method="POST">
       <div class="form-group">
         <input class="form-control" name="username" placeholder="user">
       </div>

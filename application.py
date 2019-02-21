@@ -58,7 +58,7 @@ def index():
         flash(db_username)
         flash(db_hash)
 
-#        db_hash="$pbkdf2-sha256$29000$Z2yNcW4NIcR4L6XU2vu/lw$cft//adlGUT3Szd8EufUfoin/Zj3ybmcMlafM1myIlE"
+
 
 #        db_hash = db_hash[0].encode("utf-8")
         if pbkdf2_sha256.verify(password, db_hash):
@@ -119,3 +119,11 @@ def search():
         results = db.execute("SELECT * FROM books WHERE title = :query", {"query": query}).fetchall()
 
         return render_template('search.html', results=results)
+
+
+@app.route("/logout", methods=["POST", "GET"])
+def logout():
+    session['logged_in'] = False
+    session['user_id'] = None
+    flash('Logged out successfully')
+    return redirect(url_for('index'))
