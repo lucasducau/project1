@@ -9,9 +9,23 @@
 {% block body %}
 
 
+<div class="jumbotron">
+  <h1 class="display-4">{{book.title}} ({{book.year}})</h1>
+  <p class="lead">Written by: {{book.author}}</p>
+  <hr class="my-4">
+  <p>isbn: {{book.isbn}}</p>
+</div>
 
-<h1>{{book.title}}</h1>
-<h1>asDSAJHSADASD</h1>
+
+{% if session.get('logged_in') %}
+  <p>POST A COMMENT</p>
+
+
+{% else %}
+  <p>LOGIN TO POST A COMMENT</p>
+
+{% endif %}
+
 
 
 {% endblock %}

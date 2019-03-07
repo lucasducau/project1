@@ -113,12 +113,23 @@ def search():
 
     if request.method == "POST":
 
-        type = request.form.get("searchtype")
-        query = request.form.get("searchquery")
 
-        results = db.execute("SELECT * FROM books WHERE title = :query", {"query": query}).fetchall()
-        flash(type)
+        query = request.form.get("searchquery")
+        try:
+            yeartext = int(query)
+        except ValueError:
+            yeartext = 0
+
+        text = f"%{query}%".lower()
+
+        results = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE :title OR LOWER(author) LIKE :author OR year = :year OR LOWER(isbn) LIKE :isbn"
+        ,{"title": text, "author": text, "year": yeartext, "isbn": text}).fetchall()
+
+
+
+
         flash(query)
+        flash(text)
         return render_template('search.html', results=results)
 
 
@@ -136,8 +147,8 @@ def logout():
         return redirect(url_for('index'))
 
 
-@app.route("/book/<string:isbn>")
-def books(isbn):
+@app.route("/book/<string:isbn>", methods=["GET","POST"])
+def book(isbn):
 
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     if book is None:
