@@ -136,6 +136,14 @@ def logout():
         return redirect(url_for('index'))
 
 
+@app.route("/book/<string:isbn>")
+def books(isbn):
+
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    if book is None:
+        return render_template('error.html', errorMsg="Book not found.")
+
+    return render_template('book.html', book=book)
 
 
 

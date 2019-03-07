@@ -57,7 +57,11 @@ Search for books
 
 
   {% for result in results %}
-  <ul><li>{{result.title}}</li></ul>
+  <ul>
+    <li>
+      <a href="{{ url_for('books',isbn=result.isbn) }}">{{result.title}}</a>
+    </li>
+  </ul>
   {% endfor %}
 
 

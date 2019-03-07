@@ -5,3 +5,6 @@ hr {
 .main-container{
   padding-top:5em !important;
 }
+.main-container h1{
+  text-align: center !important;
+}
