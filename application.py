@@ -117,13 +117,29 @@ def search():
         query = request.form.get("searchquery")
 
         results = db.execute("SELECT * FROM books WHERE title = :query", {"query": query}).fetchall()
-
+        flash(type)
+        flash(query)
         return render_template('search.html', results=results)
 
 
-@app.route("/logout", methods=["POST", "GET"])
+@app.route("/logout", methods=["GET"])
 def logout():
-    session['logged_in'] = False
-    session['user_id'] = None
-    flash('Logged out successfully')
-    return redirect(url_for('index'))
+
+    if session['logged_in'] == True:
+        session['logged_in'] = False
+        session['user_id'] = None
+        flash('Logged out successfully')
+        return redirect(url_for('index'))
+
+    if session['logged_in'] == False:
+        flash('You are not logged in')
+        return redirect(url_for('index'))
+
+
+
+
+
+@app.route("/error", methods=["GET"])
+def error():
+    errorMsg = "Welcome to the error page"
+    return render_template('error.html', errorMsg=errorMsg)
