@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from flask import Flask, session, render_template, request, redirect, url_for, jsonify
 from flask import flash
@@ -8,6 +9,10 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from passlib.hash import pbkdf2_sha256
 
 
+
+
+
+now = datetime.datetime.now()
 app = Flask(__name__)
 app.secret_key = "eNdOrJe"
 
@@ -149,12 +154,31 @@ def logout():
 
 @app.route("/book/<string:isbn>", methods=["GET","POST"])
 def book(isbn):
+    if request.method == "GET":
+        book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+        if book is None:
+            return render_template('error.html', errorMsg="Book not found.")
 
-    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
-    if book is None:
-        return render_template('error.html', errorMsg="Book not found.")
+        return render_template('book.html', book=book)
 
-    return render_template('book.html', book=book)
+    if request.method == "POST":
+        username = session['user_id']
+        userquery = db.execute("SELECT user_id FROM users WHERE username = :username", {"username": username}).fetchone()
+        user_id = userquery.user_id
+        review = request.form.get("review")
+        datetime = now.strftime("%Y-%m-%d %H:%M:%S")
+        current_book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn":isbn}).fetchone()
+
+        if not db.execute("SELECT * FROM reviews WHERE isbn = :isbn AND user_id = :id", {"isbn": isbn,"id": user_id}).rowcount == 0:
+            return render_template('error.html', errorMsg="You have already submitted a review for this book")
+
+        db.execute("INSERT INTO reviews (dateandtime, isbn, user_id, review_text) VALUES (:dateandtime,:isbn,:user_id,:review_text)",
+        {"dateandtime": datetime,"isbn": current_book.isbn, "user_id": username, "review_text": review})
+        db.commit()
+
+        return redirect(url_for('book', isbn=current_book.isbn))
+
+
 
 
 

@@ -19,7 +19,11 @@
 
 {% if session.get('logged_in') %}
   <p>POST A COMMENT</p>
-
+    <form action="{{ url_for('book',isbn=book.isbn)}}" method="POST">
+      <textarea name="review" rows="8" cols="70"></textarea>
+      <p name="book_isbn">{{book.isbn}}</p>
+      <button class="btn btn-primary">Submit</button>
+    </form>
 
 {% else %}
   <p>LOGIN TO POST A COMMENT</p>
