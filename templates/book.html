@@ -32,4 +32,14 @@
 
 
 
+<h4>Comments</h4>
+{% for review in reviews%}
+  <h5>{{ review.username }}</h5>
+
+  <p>{{ review.review_text }}</p>
+  <p>Posted on {{review.dateandtime}}</p>
+{% endfor %}
+
+
+
 {% endblock %}

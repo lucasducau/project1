@@ -159,7 +159,10 @@ def book(isbn):
         if book is None:
             return render_template('error.html', errorMsg="Book not found.")
 
-        return render_template('book.html', book=book)
+        reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn ORDER BY dateandtime DESC", {"isbn": isbn}).fetchall()
+        query = db.execute("SELECT * FROM users").fetchall()
+
+        return render_template('book.html', book=book,reviews=reviews)
 
     if request.method == "POST":
         username = session['user_id']
@@ -172,10 +175,12 @@ def book(isbn):
         if not db.execute("SELECT * FROM reviews WHERE isbn = :isbn AND user_id = :id", {"isbn": isbn,"id": user_id}).rowcount == 0:
             return render_template('error.html', errorMsg="You have already submitted a review for this book")
 
-        db.execute("INSERT INTO reviews (dateandtime, isbn, user_id, review_text) VALUES (:dateandtime,:isbn,:user_id,:review_text)",
-        {"dateandtime": datetime,"isbn": current_book.isbn, "user_id": username, "review_text": review})
+        db.execute("INSERT INTO reviews (dateandtime, isbn, user_id, review_text, username) VALUES (:dateandtime,:isbn,:user_id,:review_text, :username)",
+        {"dateandtime": datetime,"isbn": current_book.isbn, "user_id": user_id, "review_text": review, "username": username})
         db.commit()
 
+        reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+        users = db.execute("SELECT * FROM users")
         return redirect(url_for('book', isbn=current_book.isbn))
 
 
