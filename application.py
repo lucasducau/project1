@@ -1,5 +1,6 @@
 import os
 import datetime
+import requests
 
 from flask import Flask, session, render_template, request, redirect, url_for, jsonify
 from flask import flash
@@ -127,14 +128,19 @@ def search():
 
         text = f"%{query}%".lower()
 
+
+
         results = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE :title OR LOWER(author) LIKE :author OR year = :year OR LOWER(isbn) LIKE :isbn"
         ,{"title": text, "author": text, "year": yeartext, "isbn": text}).fetchall()
 
 
+        if len(results) == 0:
+            flash('No results found')
+            return render_template('search.html')
 
 
-        flash(query)
-        flash(text)
+    #    flash(query)
+    #    flash(text)
         return render_template('search.html', results=results)
 
 
@@ -155,6 +161,8 @@ def logout():
 @app.route("/book/<string:isbn>", methods=["GET","POST"])
 def book(isbn):
     if request.method == "GET":
+        goodreadsRequest = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "K9PPwrOh1HaznOBfZnbg", "isbns": isbn})
+        goodreads = goodreadsRequest.json()
         book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
         if book is None:
             return render_template('error.html', errorMsg="Book not found.")
@@ -162,7 +170,8 @@ def book(isbn):
         reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn ORDER BY dateandtime DESC", {"isbn": isbn}).fetchall()
         query = db.execute("SELECT * FROM users").fetchall()
 
-        return render_template('book.html', book=book,reviews=reviews)
+        #the way stars are displayed in the html is awful i know but i can't make it work and want to move on to another project
+        return render_template('book.html', book=book,reviews=reviews,goodreads=goodreads)
 
     if request.method == "POST":
         username = session['user_id']
@@ -171,16 +180,14 @@ def book(isbn):
         review = request.form.get("review")
         datetime = now.strftime("%Y-%m-%d %H:%M:%S")
         current_book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn":isbn}).fetchone()
-
+        star_number = int(request.form.get("star_number"))
         if not db.execute("SELECT * FROM reviews WHERE isbn = :isbn AND user_id = :id", {"isbn": isbn,"id": user_id}).rowcount == 0:
             return render_template('error.html', errorMsg="You have already submitted a review for this book")
 
-        db.execute("INSERT INTO reviews (dateandtime, isbn, user_id, review_text, username) VALUES (:dateandtime,:isbn,:user_id,:review_text, :username)",
-        {"dateandtime": datetime,"isbn": current_book.isbn, "user_id": user_id, "review_text": review, "username": username})
+        db.execute("INSERT INTO reviews (dateandtime, isbn, user_id, review_text, username, star_number) VALUES (:dateandtime,:isbn,:user_id,:review_text, :username, :star_number)",
+        {"dateandtime": datetime,"isbn": current_book.isbn, "user_id": user_id, "review_text": review, "username": username, "star_number": star_number})
         db.commit()
 
-        reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
-        users = db.execute("SELECT * FROM users")
         return redirect(url_for('book', isbn=current_book.isbn))
 
 
@@ -191,3 +198,24 @@ def book(isbn):
 def error():
     errorMsg = "Welcome to the error page"
     return render_template('error.html', errorMsg=errorMsg)
+
+
+@app.route("/api/book/<string:isbn>")
+def api(isbn):
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+    reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+    if book is None:
+        return jsonify({
+            "error_code": 404,
+            "error_message": "Book not found"
+
+            }), 404
+
+    json = {"title": book.title,
+            "author": book.author,
+            "year": book.year,
+            "isbn": book.isbn,
+            "number_of_reviews": len(reviews)
+            }
+
+    return jsonify(json)

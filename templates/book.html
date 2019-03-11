@@ -8,12 +8,24 @@
 
 {% block body %}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+          <div class="alert alert-success" role="alert">
+              {{message}}
+            </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 
 <div class="jumbotron">
   <h1 class="display-4">{{book.title}} ({{book.year}})</h1>
   <p class="lead">Written by: {{book.author}}</p>
   <hr class="my-4">
   <p>isbn: {{book.isbn}}</p>
+  <p>Average rating on Goodreads: {{goodreads.books[0]["average_rating"]}}</p>
+  <p>Times rated: {{goodreads.books[0]["work_ratings_count"]}}</p>
 </div>
 
 
@@ -21,20 +33,47 @@
   <p>POST A COMMENT</p>
     <form action="{{ url_for('book',isbn=book.isbn)}}" method="POST">
       <textarea name="review" rows="8" cols="70"></textarea>
-      <p name="book_isbn">{{book.isbn}}</p>
+      <div class="form-group">
+
+        <select class="form-control" name="star_number">
+          <option value="1">1&#9733;</option>
+          <option value="2">2&#9733;</option>
+          <option value="3">3&#9733;</option>
+          <option value="4">4&#9733;</option>
+          <option value="5">5&#9733;</option>
+        </select>
+
+      </div>
       <button class="btn btn-primary">Submit</button>
     </form>
 
 {% else %}
   <p>LOGIN TO POST A COMMENT</p>
-
 {% endif %}
 
 
 
 <h4>Comments</h4>
+
 {% for review in reviews%}
-  <h5>{{ review.username }}</h5>
+  <h5>
+
+      {% if review.star_number == 5 %}
+        <i>&#9733;</i><i>&#9733;</i><i>&#9733;</i><i>&#9733;</i><i>&#9733;</i>
+        {% elif review.star_number == 4 %}
+      <i>&#9733;</i><i>&#9733;</i><i>&#9733;</i><i>&#9733;</i>
+        {% elif review.star_number == 3 %}
+        <i>&#9733;</i><i>&#9733;</i><i>&#9733;</i>
+        {% elif review.star_number == 2 %}
+        <i>&#9733;</i><i>&#9733;</i>
+        {% else %}
+      <i>&#9733;</i>
+
+      {% endif %}
+
+
+    {{ review.username }}
+  </h5>
 
   <p>{{ review.review_text }}</p>
   <p>Posted on {{review.dateandtime}}</p>
