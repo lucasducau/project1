@@ -204,6 +204,9 @@ def error():
 def api(isbn):
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
     reviews = db.execute("SELECT * FROM reviews WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+    totalScore = 0
+    for review in reviews:
+        totalScore += review.star_number
     if book is None:
         return jsonify({
             "error_code": 404,
@@ -215,7 +218,9 @@ def api(isbn):
             "author": book.author,
             "year": book.year,
             "isbn": book.isbn,
-            "number_of_reviews": len(reviews)
+            "number_of_reviews": len(reviews),
+            "average_score": totalScore / len(reviews),
+            
             }
 
     return jsonify(json)
