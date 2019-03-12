@@ -2,13 +2,7 @@
 
       
 
-        <title>Project 1: Books</title>
-
-    </head>
-
-    <body>
-        <div class="container-lg px-3 my-3 markdown-body">
-            <h1 id="project-1-books">Project 1: Books</h1>
+<h1>Project 1 : Books</h1>
 
 <h2 id="objectives">Objectives</h2>
 
